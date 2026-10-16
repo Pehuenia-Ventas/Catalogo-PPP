@@ -1,1 +1,33 @@
-<!doctype html><meta charset="utf-8"><meta name="robots" content="noindex"><title>Catálogo PPP</title><script>location.replace("index_1.html"+location.hash)</script>
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Catálogo PPP</title>
+<meta property="og:title" content="Catálogo PPP · Pedidos por WhatsApp">
+<meta property="og:description" content="Pepsico · Peñaflor · Georgalos · Gaona · P&amp;G · Almacén">
+</head>
+<body style="margin:0;font:16px system-ui,sans-serif;text-align:center;padding:60px 20px;color:#10303b;background:#f3f6f6">
+<b style="font-size:42px;color:#0f5b70;font-family:'Arial Narrow',Arial,sans-serif">PPP</b>
+<p id="m">Cargando catálogo…</p>
+<script>
+(async () => {
+  const m = document.getElementById('m');
+  const fail = () => { m.textContent = 'Este catálogo se abre con el link que te pasó tu vendedor. Pedíselo por WhatsApp.'; };
+  let h = decodeURIComponent(location.hash.slice(1)), k = h, v = '';
+  if (h.includes(':')) [v, k] = h.split(':');
+  if (!k) { try { k = localStorage.getItem('ppp-k') || ''; } catch (e) {} }
+  if (!k) return fail();
+  try {
+    const t = await (await fetch('index_1.html', { cache: 'no-cache' })).text();
+    const IV = t.match(/const IV="([^"]+)"/)[1], CT = t.match(/const CT="([^"]+)"/)[1];
+    const b = s => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
+    const key = await crypto.subtle.importKey('raw', b(k), 'AES-GCM', false, ['decrypt']);
+    const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b(IV) }, key, b(CT));
+    try { localStorage.setItem('ppp-k', k); } catch (e) {}
+    history.replaceState(null, '', v ? '#' + v : location.pathname);
+    const html = new TextDecoder().decode(pt);
+    document.open(); document.write(html); document.close();
+  } catch (e) { fail(); }
+})();
+</script>
+</body></html>
