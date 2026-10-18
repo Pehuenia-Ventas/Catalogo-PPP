@@ -33,7 +33,7 @@
     const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b(IV) }, key, b(CT));
     try { localStorage.setItem('ppp-k', k); } catch (e) {}
     history.replaceState(null, '', v ? '#' + v : location.pathname);
-    const html = new TextDecoder().decode(pt);
+    const html = new TextDecoder().decode(pt).split('__PPPKEY__').join(k);
     document.open(); document.write(html); document.close();
   } catch (e) { fail(); }
 })();
